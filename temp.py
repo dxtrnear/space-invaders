@@ -94,17 +94,11 @@ class Defender(object):
         dy=coords[1]
         if len(self.fired_bullets) < self.max_fired_bullets: 
             bullet = Bullet("defender")
-            bullet = bullet.install_in(canvas,dx,dy)    
-            self.fired_bullets.append(bullet) 
-    def moveBullet(self,canvas):
-        for i in range(0,len(self.fired_bullets)):
-            y= canvas.bbox(self.fired_bullets[i].id)[1]
-            if y<0: 
-                canvas.delete(self.fired_bullets[i].id) 
-                del self.fired_bullets[i] 
-                break
-            else:
-                self.fired_bullets[i].move_in(canvas) 
+            bullet.id = bullet.install_in(canvas,dx,dy)    
+            self.fired_bullets.append(bullet)
+
+
+
     
     
 class Bullet(object):
@@ -117,10 +111,9 @@ class Bullet(object):
 
     def install_in(self, canvas,dx,dy):
         self.canvas=canvas
-        self.id=self.canvas.create_oval(dx-self.radius, dy-self.radius, dx+self.radius, dy+self.radius, fill=self.color )
+        self.id=self.canvas.create_oval(dx-self.radius, dy-self.radius, dx+self.radius, dy+self.radius, fill=self.color,tags="bullet" )
     def move_in(self,canvas):
-        if self.shooter=="defender":
-            canvas.move(self.id, 0, -self.speed)
+        print("sir")
 
 class Example:
     def __init__(self):
@@ -140,10 +133,8 @@ class Example:
     def animation(self):
         self.fleet.move_in(self.canvas)
         self.fleet.animation_fleet(self.canvas)
-        self.defender.moveBullet(self.canvas)
         self.canvas.after(200, self.animation)
     def keypress(self,event):
-        print("test")
         if event.keysym == 'Left':
             if (self.canvas.coords(self.defender.id)[0]>=self.defender.width):
                 self.defender.move_in(self.canvas,-self.defender.move_delta)
