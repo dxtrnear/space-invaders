@@ -1,129 +1,130 @@
-# Byte-compiled / optimized / DLL files
-__pycache__/
-*.py[cod]
-*$py.class
+import tkinter as tk
+from tkinter import *
 
-# C extensions
-*.so
+import tkinter.messagebox as tkMessageBox
+from tkinter import messagebox
+#--------------------------------------Class Alien-----------------------------------------------
+class Alien(object):
+    #initialisation des atributs de la class alien 
+    def __init__(self):
+        self.id = None
+        self.alive = True
+        self.alien_img= PhotoImage(file='alien.gif')
+        self.alien_width = self.alien_img.width()
+        self.alien_height = self.alien_img.height()
+        
+    #afficher l'alien
+    def install_in(self, canvas, x, y):
+       self.id=canvas.create_image(x,y,image=self.alien_img,tags="alien")
+       return self
+   
+    #fonctions des accesseurs de la largeur et la longueur de l'alien
+    def get_width(self):
+        return self.alien_width  
+    def get_height(self):
+        return self.alien_height
+    
+    #mouvement de l'alien
+    def move_in(self, canvas, dx, dy):
+        canvas.move(self.id, dx, dy)#va bouger en fonction de la direction donné par fleet
+        
+    #colisions: si l'alien est toucher par "bullet"
+    def touched_by(self,canvas,projectile):
+        print("completer plus tard")
+        
+    
+    def change_alien_image(self, canvas):
+        if (self.alien.cget("file") == "alien.gif"): #si c'est la 1ere image
+            self.alien = PhotoImage(file="alien1.gif") #on modifie la variable de l'image
+            canvas.itemconfigure(self.id, image=self.alien) #on change l'image
+        else:
+            self.alien = PhotoImage(file="alien1.gif") #on modifie la variable de l'image
+            canvas.itemconfigure(self.id, image=self.alien) #on change l'image
+#--------------------------------------Class Fleet-----------------------------------------------
+class Fleet(object):
+    #initialisation des attributs de la class fleet
+    def __init__(self):
+        #taille de la fleet
+        self.aliens_lines = 5
+        self.aliens_columns =10
+        self.aliens_inner_gap = 20
+        fleet_size =self.aliens_lines * self.aliens_columns
+        self.aliens_fleet = [None] * fleet_size
+        #coordonnés des deplacements
+        self.alien_x_delta = 5
+        self.alien_y_delta = 15
+        
+    #installation...
+    def install_in(self, canvas):
+        x, y = 50 , 75   #coordonnées du premiere alien de la fleet
+        pos = 0 #l'indice dans la liste des aliens
+        #boucle pour cree le nombre d'alien souhaité dans la fleet
+        for i in range(0,self.aliens_lines):
+            for j in range(0,self.aliens_columns):
+                alien = Alien()
+                self.aliens_fleet[pos] = alien.install_in(canvas,x,y) 
+                pos += 1
+                x += self.aliens_inner_gap + alien.alien_width
+            #ecart entre les aliens
+            x = 50
+            y += self.aliens_inner_gap + alien.alien_height
+    
+    #deplacement de l'ensemble de la fleet 
+    def move_in(self, canvas):
+        if len(self.aliens_fleet) != 0:
+            #on incremente les variables x1 et x2 par les coordonnés de l'alien 
+            x1 = canvas.bbox("alien")[0]
+            x2 = canvas.bbox("alien")[2]
+            print(canvas.bbox("alien"))
+            
+            #on met des conditions au deplacement de la fleet selon les bordures du canvas
+            if x2 >= int(canvas.cget("width")):
+                self.alien_x_delta = -self.alien_x_delta
+                dy = 0
+            elif x1 <= 0: 
+                self.alien_x_delta = -self.alien_x_delta
+                dy = self.alien_y_delta
+            else:
+                dy = 0
+                
+            #on deplace toute la fleet selon les conditions 
+            for i in range(0,len(self.aliens_fleet)):
+                self.aliens_fleet[i].move_in(canvas,self.alien_x_delta,dy)
 
-# Distribution / packaging
-.Python
-build/
-develop-eggs/
-dist/
-downloads/
-eggs/
-.eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-wheels/
-pip-wheel-metadata/
-share/python-wheels/
-*.egg-info/
-.installed.cfg
-*.egg
-MANIFEST
+class Example:
+    def __init__(self):
+        self.root = tk.Tk()
+        self.canvas_width = 1200
+        self.canvas_height = 800
+        self.canvas = tk.Canvas(self.root, width=self.canvas_width, height=self.canvas_height, bg='black')
+        txt=Label(self.canvas, text="Welcome to Space Invaders", fg='green', font=("Arcade Interlaced", 75), bg='black')
+        txt.place(x=60, y=50)
+        btn=Button(self.canvas, text="PLAY !",font=("arcade"), fg='green', bg='black')
+        btn.place(x=600, y=400)
+        self.canvas.pack()
+    
+        self.fleet = Fleet()
+    
+    
+    
+    
+    def install(self):
+        return self.fleet.install_in(self.canvas)
+    
+    def start_animation(self):
+        self.canvas.after(10, self.animation)
 
-# PyInstaller
-#  Usually these files are written by a python script from a template
-#  before PyInstaller builds the exe, so as to inject date/other infos into it.
-*.manifest
-*.spec
+    def animation(self):
+        self.fleet.move_in(self.canvas)
+        self.canvas.after(300, self.animation)
+    
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
+    def start(self):
+        
+        self.install()
+        self.start_animation()
+        self.root.mainloop()
 
-# Unit test / coverage reports
-htmlcov/
-.tox/
-.nox/
-.coverage
-.coverage.*
-.cache
-nosetests.xml
-coverage.xml
-*.cover
-*.py,cover
-.hypothesis/
-.pytest_cache/
 
-# Translations
-*.mo
-*.pot
-
-# Django stuff:
-*.log
-local_settings.py
-db.sqlite3
-db.sqlite3-journal
-
-# Flask stuff:
-instance/
-.webassets-cache
-
-# Scrapy stuff:
-.scrapy
-
-# Sphinx documentation
-docs/_build/
-
-# PyBuilder
-target/
-
-# Jupyter Notebook
-.ipynb_checkpoints
-
-# IPython
-profile_default/
-ipython_config.py
-
-# pyenv
-.python-version
-
-# pipenv
-#   According to pypa/pipenv#598, it is recommended to include Pipfile.lock in version control.
-#   However, in case of collaboration, if having platform-specific dependencies or dependencies
-#   having no cross-platform support, pipenv may install dependencies that don't work, or not
-#   install all needed dependencies.
-#Pipfile.lock
-
-# PEP 582; used by e.g. github.com/David-OConnor/pyflow
-__pypackages__/
-
-# Celery stuff
-celerybeat-schedule
-celerybeat.pid
-
-# SageMath parsed files
-*.sage.py
-
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# Spyder project settings
-.spyderproject
-.spyproject
-
-# Rope project settings
-.ropeproject
-
-# mkdocs documentation
-/site
-
-# mypy
-.mypy_cache/
-.dmypy.json
-dmypy.json
-
-# Pyre type checker
-.pyre/
+ex = Example()
+ex.start()
