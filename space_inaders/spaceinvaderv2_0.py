@@ -165,8 +165,8 @@ class Game(object):#cette classe permet de gerer les elements du jeu
         self.frame = frame
         self.fleet = Fleet()
         self.defender = Defender()
-        self.height =600
-        self.width = 1200
+        self.height =580
+        self.width = 1100
         self.canvas = Canvas(self.frame, width=self.width, height=self.height, bg='black')
         self.canvas.pack()
     def install_in(self):#permet de regrouper toutes les fonctions install
@@ -219,11 +219,20 @@ class SpaceInvaders(object):
         self.frame.pack()
         self.game = Game(self.frame)
         self.root.resizable(0, 0)
+    def close(self):
+        self.root.quit()
+    def menu(self):
+        self.game.canvas.create_text(self.game.width/2,50,text="Space invader", fill="lime", font="Helvetica 50 bold")
+        
+
+    def start(self,event):
+        self.game.canvas.delete("all")
         self.game.install_in()
-            
-    def play(self):
-        self.root.bind("<Key>", self.game.keypress) 
         self.game.start_animation()
+    def play(self):
+        self.menu()
+        self.root.bind("<Key>", self.game.keypress) 
+        self.root.bind("<Return>",self.start)
         self.root.mainloop()
 
 SpaceInvaders().play()
