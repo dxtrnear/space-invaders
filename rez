@@ -1,0 +1,15 @@
+                                              
+from tkinter import *
+menu=Tk()
+menu['background']='black'
+txt=Label(menu, text="Welcome to Space Invaders", fg='green', font=("Arcade Interlaced", 75), bg='black')
+txt.place(x=60, y=50)
+btn=Button(menu, text="PLAY !",font=("arcade"), fg='green', bg='black')
+btn.place(x=600, y=400)
+txtfld=Entry(menu, text="Enter your name", bd=5)
+txtfld.place(x=570, y=300)
+menu.title('Space Invaders')
+menu.geometry("1200x800+10+20")
+menu.mainloop()
+
+
